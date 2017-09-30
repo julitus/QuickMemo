@@ -5,12 +5,16 @@
 				<div class="row separate-row">
 					<div class="col-md-9 col-xs-12">
 						<div class="b_search">
-							<?= $this->Form->create(null, ['type' => 'get', 'url' => ['controller' => 'notes', 'action' => 'home'], 'role' => 'form']) ?>
+							<?= $this->Form->create($note, ['type' => 'get', 'url' => ['controller' => 'notes', 'action' => 'home'], 'role' => 'form']) ?>
 								<table>
 								<tr>
+                  <td>
+                   <?= $this->Form->select('type', $types, ['empty' => 'All', 'class' => 'form-control']) ?>
+                  </td>
 									<td>
 										<!--input type="text" class="text" value="Enter text here" pattern='.{3,}' name="word" title="Ingrese al menos 3 caracteres" required onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter text here';}"-->
-										<input type="text" class="text" pattern='.{3,}' name="word" title="Ingrese al menos 3 caracteres" required placeholder="Enter text here" autofocus="autofocus">
+										<!--input type="text" class="text" name="word" pattern='.{3,}' title="Ingrese al menos 3 caracteres" required placeholder="Enter text here" autofocus="autofocus"-->
+                    <input type="text" class="text" name="word" placeholder="Enter text here" autofocus="autofocus">
 									</td>
 									<td>
 										<input type="submit" value="search">
@@ -26,105 +30,114 @@
 						</div>
 					</div>
 				</div>
+        <div class="results row">
+          <div class="col-xs-12 ">
+            <?php if(!is_null($notes) and !empty($notes->toArray())): ?>
+              <table class='table table-hover'>
+                <thead>
+                  <tr>
+                      <th scope="col"><?= $this->Paginator->sort('title', 'Title') ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('type_id', 'Type') ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('keyword', 'Keywords') ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('file', '<i class="fa fa-paperclip"></i>', ['escape' => false]) ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('important', '<i class="fa fa-lock"></i>', ['escape' => false]) ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('hit', '<i class="fa fa-eye"></i>', ['escape' => false]) ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('rating', 'Rating') ?></th>
+                      <th scope="col"><?= $this->Paginator->sort('modified', 'Last Change') ?></th>
+                      <th scope="col" class="actions"><?= __('Actions') ?></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($notes as $note): ?>
+                  <tr>
+                      <td><?= h($note->title) ?></td>
+                      <td><?= $note->has('type') ? h($note->type->name) : '...' ?></td>
+                      <td>
+                        <?php $keywords = explode(",", $note->keyword); ?>
+                        <?php foreach ($keywords as $k): ?> 
+                          <label><span class="label label-custom">
+                              <?= $k ?>
+                            </span></label>
+                        <?php endforeach; ?>
+                      </td>
+                      <td>
+                        <?php if(!is_null($note->file)): ?>
+                          <i class="fa fa-paperclip"></i>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <?php if($note->important): ?>
+                          <i class="fa fa-lock"></i>
+                        <?php endif; ?>
+                      </td>
+                      <td><?= h($note->hit) ?></td>
+                      <td>
+                        <?php for ($i = 0; $i < $note->rating; $i++) { ?>
+                            <i class="fa fa-star"></i>
+                        <?php } ?>
+                      </td>
+                      <td><?= h(date("d-m-Y H:i", strtotime($note->modified))) ?></td>
+                      <td class="actions">
+                        <?php if($note->important): ?>
+                          <a data-toggle="modal" href='#bearout' class="openBearOut btn btn-simbol btn-custom" data-id='<?= $note->id ?>', data-slug='<?= $note->slug ?>'><span class="fa fa-search" aria-hidden="true"></span></a>
+                        <?php else: ?>
+                          <?= $this->Html->link(__('<span class="fa fa-search" aria-hidden="true"></span>'), ['action' => 'view', $note->id, $note->slug], ['class' => 'btn btn-simbol btn-custom', 'title' => 'Ver', 'escape' => false]) ?>
+                        <?php endif; ?>
+                          <a data-toggle="modal" href='#setrating' class="openSetRating btn btn-simbol btn-custom" data-id='<?= $note->id ?>', data-rating='<?= $note->rating ?>'><span class="fa fa-star-o" aria-hidden="true"></span></a>
+                          <!--?= $this->Html->link(__('<span class="fa fa-pencil" aria-hidden="true"></span>'), ['action' => 'edit', $note->id], ['class'=>'btn btn-simbol btn-success', 'title' => 'Editar', 'escape' => false]) ?-->
+                          <?= $this->Form->postLink(__('<span class="fa fa-times" aria-hidden="true"></span>'), ['action' => 'delete', $note->id], ['confirm' => __('¿Estas seguro que quieres eliminar el registro # {0}?', $note->title), 'class'=>'btn btn-simbol btn-custom', 'title' => 'Eliminar', 'escape' => false]) ?>
+                      </td>
+                  </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+
+              <ul class="pagination">
+                <?= $this->Paginator->first('&lsaquo;', ['escape' => false]) ?>
+                <?= $this->Paginator->prev('&laquo;', ['escape' => false]) ?>
+                              <?= $this->Paginator->numbers() ?>
+                              <?= $this->Paginator->next('&raquo;', ['escape' => false]) ?>
+                              <?= $this->Paginator->last('&rsaquo;', ['escape' => false]) ?>
+              </ul>
+              <p><?= $this->Paginator->counter('Resultados {{start}} - {{end}} de {{count}}, página {{page}} / {{pages}}') ?></p>
+            <?php endif; ?>
+          </div>
+
+        </div>
 			</div>
+      <div class="col-md-2 col-xs-12">
+       <?= $this->Flash->render() ?>
+        <?php if(is_null($notes)): ?>
+          <div class="alert alert-info alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Info >> </strong> Searches are by title or a keyword.
+          </div>
+        <?php else: ?>
+          <?php if(empty($notes->toArray())): ?>
+            <div class="alert alert-info alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <strong>Info >> </strong> No results found for <strong>"<?= $word ?>"</strong>.
+            </div>
+          <?php else: ?>
+            <?php if(!is_null($word)): ?>
+              <div class="alert alert-info alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong>Success >> <?= $this->Paginator->counter('{{count}}') ?> </strong> found results for <strong>"<?= $word ?>"</strong>.
+              </div>
+            <?php else: ?>
+              <div class="alert alert-info alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong>Success >> <?= $this->Paginator->counter('{{count}}') ?> </strong> found results.
+              </div>
+            <?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
+      </div>
 		</div>
 	</div>
 	<div class="container">
 		<div class="results row">
-			<div class="col-md-8 col-md-offset-2 col-xs-12 ">
-				<?= $this->Flash->render() ?>
-				<?php if(is_null($notes)): ?>
-					<div class="alert alert-info alert-dismissable">
-					  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-					  <strong>Info >> </strong> Searches are by title or a keyword.
-					</div>
-				<?php else: ?>
-					<?php if(empty($notes->toArray())): ?>
-						<div class="alert alert-info alert-dismissable">
-						  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-						  <strong>Info >> </strong> No results found for <strong>"<?= $word ?>"</strong>.
-						</div>
-					<?php else: ?>
-						<div class="alert alert-success alert-dismissable">
-						  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-						  <strong>Success >> <?= $this->Paginator->counter('{{count}}') ?> </strong> found results for <strong>"<?= $word ?>"</strong>.
-						</div>
-
-						<table class='table table-striped'>
-							<thead>
-                                <tr>
-                                    <th scope="col"><?= $this->Paginator->sort('title', 'Title') ?></th>
-                                    <th scope="col"><?= $this->Paginator->sort('type_id', 'Type') ?></th>
-                                    <th scope="col"><?= $this->Paginator->sort('keyword', 'Keywords') ?></th>
-                                    <th scope="col"><i class="fa fa-paperclip"></i></th>
-                                    <th scope="col"><i class="fa fa-lock"></i></th>
-                                    <th scope="col"><?= $this->Paginator->sort('hit', '<i class="fa fa-eye"></i>', ['escape' => false]) ?></th>
-                                    <th scope="col"><?= $this->Paginator->sort('rating', 'Rating') ?></th>
-                                    <th scope="col"><?= $this->Paginator->sort('modified', 'Last Change') ?></th>
-                                    <th scope="col" class="actions"><?= __('Actions') ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($notes as $note): ?>
-                                <tr>
-                                    <td><?= h($note->title) ?></td>
-                                    <td><?= $note->has('type') ? h($note->type->name) : '...' ?></td>
-                                    <td>
-                                    	<?php $keywords = explode(",", $note->keyword); ?>
-	                                    <?php foreach ($keywords as $k): ?> 
-	                                    	<label><span class="label label-custom">
-	                                          <?= $k ?>
-	                                        </span></label>
-	                                    <?php endforeach; ?>
-                                    </td>
-                                    <td>
-                                    	<?php if(!is_null($note->file)): ?>
-                                    		<i class="fa fa-paperclip"></i>
-                                    	<?php endif; ?>
-                                    </td>
-                                    <td>
-                                    	<?php if($note->important): ?>
-                                    		<i class="fa fa-lock"></i>
-                                    	<?php endif; ?>
-                                    </td>
-                                    <td><?= h($note->hit) ?></td>
-                                    <td>
-                                    	<?php for ($i = 0; $i < $note->rating; $i++) { ?>
-	                                        <i class="fa fa-star"></i>
-	                                    <?php } ?>
-                                    </td>
-                                    <td><?= h(date("d-m-Y H:i", strtotime($note->modified))) ?></td>
-                                    <td class="actions">
-                                    	<?php if($note->important): ?>
-                                    		<a data-toggle="modal" href='#bearout' class="openBearOut btn btn-simbol btn-custom" data-id='<?= $note->id ?>', data-slug='<?= $note->slug ?>'><span class="fa fa-search" aria-hidden="true"></span></a>
-                                    	<?php else: ?>
-                                    		<?= $this->Html->link(__('<span class="fa fa-search" aria-hidden="true"></span>'), ['action' => 'view', $note->id, $note->slug], ['class' => 'btn btn-simbol btn-custom', 'title' => 'Ver', 'escape' => false]) ?>
-                                    	<?php endif; ?>
-                                        <a data-toggle="modal" href='#setrating' class="openSetRating btn btn-simbol btn-custom" data-id='<?= $note->id ?>', data-rating='<?= $note->rating ?>'><span class="fa fa-star-o" aria-hidden="true"></span></a>
-                                        <!--?= $this->Html->link(__('<span class="fa fa-pencil" aria-hidden="true"></span>'), ['action' => 'edit', $note->id], ['class'=>'btn btn-simbol btn-success', 'title' => 'Editar', 'escape' => false]) ?-->
-                                        <?= $this->Form->postLink(__('<span class="fa fa-times" aria-hidden="true"></span>'), ['action' => 'delete', $note->id], ['confirm' => __('¿Estas seguro que quieres eliminar el registro # {0}?', $note->title), 'class'=>'btn btn-simbol btn-custom', 'title' => 'Eliminar', 'escape' => false]) ?>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-						</table>
-
-						<ul class="pagination">
-							<?= $this->Paginator->first('&lsaquo;', ['escape' => false]) ?>
-							<?= $this->Paginator->prev('&laquo;', ['escape' => false]) ?>
-                            <?= $this->Paginator->numbers() ?>
-                            <?= $this->Paginator->next('&raquo;', ['escape' => false]) ?>
-                            <?= $this->Paginator->last('&rsaquo;', ['escape' => false]) ?>
-						</ul>
-						<p><?= $this->Paginator->counter('Resultados {{start}} - {{end}} de {{count}}, página {{page}} / {{pages}}') ?></p>
-					<?php endif; ?>
-				<?php endif; ?>
-				
-				<!--div class="alert alert-warning alert-dismissable">
-				  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-				  <strong>Warning!</strong> Better check yourself, you're not looking too good.
-				</div-->
-			</div>
+			
 		</div>
 	</div>
 </div>

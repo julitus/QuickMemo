@@ -27,13 +27,9 @@
                         </div>
                     <?= $this->Form->end() ?>
                 </div>
-            </div>      
-            <div class="clearfix"></div>        
-        </div> 
-    </div>
-    <div class="container">
-        <div class="results row">
-            <div class="col-md-8 col-md-offset-2 col-xs-12 ">
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <?= $this->Flash->render() ?>
                 <?php if(empty($types->toArray())): ?>
                     <div class="alert alert-info alert-dismissable">
                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -44,7 +40,15 @@
                       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                       <strong>Success >> <?= $this->Paginator->counter('{{count}}') ?> </strong> found results.
                     </div>
-
+                <?php endif; ?>
+            </div>
+            <div class="clearfix"></div>        
+        </div> 
+    </div>
+    <div class="container">
+        <div class="results row">
+            <div class="col-md-8 col-md-offset-2 col-xs-12 ">
+                <?php if(!empty($types->toArray())): ?>
                     <table class='table table-striped'>
                         <thead>
                             <tr>

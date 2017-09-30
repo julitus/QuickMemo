@@ -36,7 +36,7 @@
 		        <li><a href="contact.html">Contact</a></li-->
 		        <li class="qmenu"><?= $this->Html->link('Home', ['controller' => 'notes', 'action' => 'home'], ['escape' => false]) ?></li>
 		        <li class="qmenu"><?= $this->Html->link('Notes', ['controller' => 'notes', 'action' => 'add'], ['escape' => false]) ?></li>
-		        <li class="qmenu"><?= $this->Html->link('History', ['controller' => 'notes', 'action' => 'index'], ['escape' => false]) ?></li>
+		        <!--li class="qmenu"><?= $this->Html->link('History', ['controller' => 'notes', 'action' => 'index'], ['escape' => false]) ?></li-->
 		      </ul>
 		    </div><!-- /.navbar-collapse -->
 		    <!-- start soc_icons -->

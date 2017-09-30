@@ -20,7 +20,7 @@
                       <strong>Success >> <?= $this->Paginator->counter('{{count}}') ?> </strong> found results.
                     </div>
 
-                    <table class='table table-striped'>
+                    <table class='table table-hover'>
                         <thead>
                             <tr>
                                 <th scope="col"><?= $this->Paginator->sort('title', 'Title') ?></th>

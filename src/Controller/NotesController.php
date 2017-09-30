@@ -23,7 +23,7 @@ class NotesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    /*public function index()
     {
         $this->paginate = [
             'limit' => 25,
@@ -37,7 +37,7 @@ class NotesController extends AppController
 
         $this->set(compact('notes'));
         $this->set('_serialize', ['notes']);
-    }
+    }*/
 
     /**
      * View method
@@ -89,7 +89,7 @@ class NotesController extends AppController
 
                 $this->Flash->success(__('The note has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'home']);
             }
             $this->Flash->error(__('The note could not be saved. Please, try again.'));
         }
@@ -129,7 +129,7 @@ class NotesController extends AppController
                 }
                 $this->Flash->success(__('The note has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'home']);
             }
             $this->Flash->error(__('The note could not be saved. Please, try again.'));
         }
@@ -155,7 +155,7 @@ class NotesController extends AppController
             $this->Flash->error(__('The note could not be deleted. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['action' => 'home']);
     }
 
     /**
@@ -173,19 +173,41 @@ class NotesController extends AppController
             'contain' => ['Types']
         ];
 
-        $notes = null;
         $word = null;
+        $type = null;
+        $note = $this->Notes->newEntity();
+
+        if (isset($this->request->query['type']) and $this->request->query['type'] != '') {
+            $note['type'] = $this->request->query['type'];
+            $type = $note['type'];
+        }
 
         if (isset($this->request->query['word']) and $this->request->query['word'] != '') {
             $word = $this->request->query['word'];
             $w = '%'.$word.'%';
-            $notes = $this->paginate(
-                $this->Notes->find('all')
-                    ->where(['OR' => ['Notes.title ILIKE' => $w, 'Notes.keyword ILIKE' => $w]])
-            );
+            if (is_null($type)) {
+                $notes = $this->paginate(
+                    $this->Notes->find('all')
+                        ->where(['OR' => ['Notes.title ILIKE' => $w, 'Notes.keyword ILIKE' => $w]])
+                );
+            } else {
+                $notes = $this->paginate(
+                    $this->Notes->find('all')
+                        ->where(['OR' => ['Notes.title ILIKE' => $w, 'Notes.keyword ILIKE' => $w], 'Notes.type_id' => $type])
+                );
+            }
+        } else {
+            $this->paginate['order'] = ['Notes.modified' => 'desc'];
+            if (is_null($type)) {
+                $notes = $this->paginate($this->Notes);
+            } else {
+                $notes = $this->paginate($this->Notes->find('all')->where(['Notes.type_id' => $type]));
+            }
         }
 
-        $this->set(compact('notes', 'word'));
+        $types = $this->Notes->Types->find('list')->order(['Types.name' => 'ASC']);
+
+        $this->set(compact('notes', 'word', 'types', 'note'));
         $this->set('_serialize', ['notes']);
     }
 

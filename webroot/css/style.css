@@ -158,7 +158,7 @@ body {
 	background: #ffffff;
 }
 .main{
-	padding: 5% 0;
+	padding: 40px 0 20px 0;
 }
 .images_1_of_4 img{
 	display: inline-block;
@@ -912,7 +912,7 @@ body {
 	font-family: 'open_sansregular';
 	padding: 10px 16px;
 	outline: none;
-	color: #c6c6c6;
+	color: #666;
 	font-size: 13px;
 	border: 1px solid rgb(236, 236, 236);
 	background: #FFFFFF;
@@ -924,8 +924,16 @@ body {
 .b_search form table {
 	width: 100%;
 }
-.b_search form table td:nth-child(2) {
+.b_search form table td:nth-child(3) {
 	width: 0px;
+}
+.b_search form table td:nth-child(1) {
+	padding-right: 15px;
+}
+.b_search form select {
+	width: 100%;
+	height: 44px;
+	font-size: 14px;
 }
 .b_search form input[type="submit"]{
 	font-family: 'open_sansregular';
@@ -1010,6 +1018,7 @@ span label {
 }
 .table > tbody > tr > td.actions {
 	padding: 2px;
+	white-space: nowrap;
 }
 .btn-custom {
     color: #BDBDBD;
@@ -1108,4 +1117,10 @@ div#modal-rating i {
 	line-height: 1;
 	margin-bottom: 0;
 	color: #fff;
+}
+.table-hover thead th a {
+	white-space: nowrap;
+}
+.separate-row {
+	margin-bottom: 10px;
 }
